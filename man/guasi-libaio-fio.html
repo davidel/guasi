@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>GUASI vs. Libaio - FIO Results</title>
+</head>
+<body>
+<div
+ style="text-align: center; font-family: monospace; color: rgb(0, 0, 255);"><big><span
+ style="font-weight: bold;">Hardware</span></big><br>
+</div>
+<br style="font-family: monospace; color: rgb(0, 0, 255);">
+<span style="font-family: monospace; color: rgb(0, 0, 255);">This is an
+"Intel(R) Pentium(R) 4 CPU 3.40GHz" with HT enabled, 1GB of RAM, a SATA
+controller with a "Maxtor 7Y250M0" attached. The system was running the
+Linux Kernel version 2.6.20 with GLIBC version 2.3.6.</span><br
+ style="font-family: monospace; color: rgb(0, 0, 255);">
+<br style="font-family: monospace; color: rgb(0, 0, 255);">
+<br style="font-family: monospace; color: rgb(0, 0, 255);">
+<div
+ style="text-align: center; font-family: monospace; color: rgb(0, 0, 255);"><big><span
+ style="font-weight: bold;">Software</span></big><br>
+</div>
+<br style="font-family: monospace; color: rgb(0, 0, 255);">
+<span style="font-family: monospace; color: rgb(0, 0, 255);">Tests
+performed using the March 23, 2007 </span><span
+ style="font-weight: bold; font-family: monospace; color: rgb(0, 0, 255);">FIO</span><span
+ style="font-family: monospace; color: rgb(0, 0, 255);"> snapshot,
+together with </span><span
+ style="font-weight: bold; font-family: monospace; color: rgb(0, 0, 255);">GUASI</span><span
+ style="font-family: monospace; color: rgb(0, 0, 255);"> version 0.23:</span><br
+ style="font-family: monospace; color: rgb(0, 0, 255);">
+<br style="font-family: monospace; color: rgb(0, 0, 255);">
+<span
+ style="font-weight: bold; font-family: monospace; color: rgb(0, 0, 255);">FIO</span><span
+ style="font-family: monospace; color: rgb(0, 0, 255);">:&nbsp;&nbsp; </span><a
+ style="font-family: monospace; color: rgb(0, 0, 255);"
+ href="http://brick.kernel.dk/snaps/">http://brick.kernel.dk/snaps/</a><br
+ style="font-family: monospace; color: rgb(0, 0, 255);">
+<span
+ style="font-weight: bold; font-family: monospace; color: rgb(0, 0, 255);">GUASI</span><span
+ style="font-family: monospace; color: rgb(0, 0, 255);">: </span><a
+ style="font-family: monospace; color: rgb(0, 0, 255);"
+ href="http://www.xmailserver.org/guasi-lib.html">http://www.xmailserver.org/guasi-lib.html</a><br
+ style="font-family: monospace; color: rgb(0, 0, 255);">
+<br style="font-family: monospace; color: rgb(0, 0, 255);">
+<br style="font-family: monospace; color: rgb(0, 0, 255);">
+<div
+ style="text-align: center; font-family: monospace; color: rgb(0, 0, 255);"><big><span
+ style="font-weight: bold;">Notes</span></big><br>
+<div style="text-align: left;"><br>
+To get consistent results, it is better to not use the <span
+ style="font-style: italic;">--runtime</span> <span
+ style="font-weight: bold;">FIO</span> option, and use the <span
+ style="font-style: italic;">--size</span> instead to limit the test
+processing time. This because, for random RW tests, reads and writes
+may statistically distribute differently over the test time, and
+chopping it with <span style="font-style: italic;">--runtime</span>
+may give wrong results. All tests has been run using the Anticipatory
+I/O Scheduler (AS), but the relative performance did not change when
+using CFQ, Deadline or Noop.<br>
+</div>
+</div>
+<pre style="color: rgb(0, 0, 255); font-family: monospace;"><br><br></pre>
+<div
+ style="text-align: center; font-family: monospace; color: rgb(0, 0, 255);"><big><span
+ style="font-weight: bold;">Results</span></big><br>
+</div>
+<pre style="color: rgb(0, 0, 255); font-family: monospace;"><br><br>[<span
+ style="font-weight: bold;">iodepth = 100</span>]<br>&gt;&gt;&gt; fio --name=global --rw=randrw --size=256m --bs=4k --direct=1 <br>        --ioengine=guasi --name=job1 --iodepth=100 --thread<br>job1: (g=0): rw=randrw, bs=4K-4K/4K-4K, ioengine=<span
+ style="font-weight: bold;">guasi</span>, <span
+ style="font-weight: bold;">iodepth=100</span><br>Starting 1 thread<br>Jobs: 1: [m] [99.5% done] [  4165/     0 kb/s] [eta 00m:01s]<br>job1: (groupid=0, jobs=1): err= 0: pid=26943<br>  read : io=128MiB, bw=653KiB/s, iops=159, runt=204919msec<br>    slat (msec): min=    0, max=    3, avg= 0.00, stdev= 0.07<br>    clat (msec): min=    0, max=37299, avg=378.25, stdev=799.38<br>    bw (KiB/s) : min=   10, max= 4857, per=126.97%, avg=829.08, stdev=633.74<br>  write: io=129MiB, bw=818KiB/s, iops=199, runt=164940msec<br>    slat (msec): min=    0, max=    3, avg= 0.00, stdev= 0.08<br>    clat (msec): min=    0, max=  645, avg=245.75, stdev=96.78<br>    bw (KiB/s) : min=    0, max= 2318, per=136.71%, avg=1118.29, stdev=831.44<br>  cpu          : usr=0.26%, sys=2.70%, ctx=391041<br>  IO depths    : 1=0.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, &gt;=64=99.9%<br>     lat (msec): 2=0.8%, 4=0.7%, 10=1.5%, 20=2.3%, 50=5.5%, 100=3.5%<br>     lat (msec): 250=48.6%, 500=19.3%, 750=11.4%, 1000=4.6%, &gt;=2000=1.8%<br><br>Run status group 0 (all jobs):<br>   READ: io=128MiB, aggrb=<span
+ style="font-weight: bold;">653KiB/s</span>, minb=653KiB/s, maxb=653KiB/s, mint=204919msec, maxt=204919msec<br>  WRITE: io=129MiB, aggrb=<span
+ style="font-weight: bold;">818KiB/s</span>, minb=818KiB/s, maxb=818KiB/s, mint=164940msec, maxt=164940msec<br><br>Disk stats (read/write):<br>  sda: ios=30520/33054, merge=2155/63, ticks=10343188/157484, in_queue=10500680, util=99.70%<br><br><br><br>&gt;&gt;&gt; fio --name=global --rw=randrw --size=256m --bs=4k --direct=1 <br>        --ioengine=libaio --name=job1 --iodepth=100 --thread<br>job1: (g=0): rw=randrw, bs=4K-4K/4K-4K, ioengine=<span
+ style="font-weight: bold;">libaio</span>, <span
+ style="font-weight: bold;">iodepth=100</span><br>Starting 1 thread<br>Jobs: 1: [m] [99.0% done] [  3506/     0 kb/s] [eta 00m:02s]<br>job1: (groupid=0, jobs=1): err= 0: pid=26933<br>  read : io=128MiB, bw=645KiB/s, iops=157, runt=207316msec<br>    slat (msec): min=    0, max=  608, avg= 0.15, stdev= 7.37<br>    clat (msec): min=    0, max= 1945, avg=374.27, stdev=330.52<br>    bw (KiB/s) : min=   17, max= 5116, per=114.01%, avg=735.38, stdev=653.86<br>  write: io=129MiB, bw=761KiB/s, iops=185, runt=177050msec<br>    slat (msec): min=    0, max=  588, avg= 0.19, stdev= 9.08<br>    clat (msec): min=    0, max= 1347, avg=256.53, stdev=219.55<br>    bw (KiB/s) : min=    0, max= 2965, per=112.11%, avg=853.16, stdev=732.91<br>  cpu          : usr=0.11%, sys=1.04%, ctx=77592<br>  IO depths    : 1=0.0%, 2=0.1%, 4=0.1%, 8=0.3%, 16=0.6%, 32=1.2%, &gt;=64=97.7%<br>     lat (msec): 2=0.4%, 4=0.3%, 10=2.6%, 20=3.8%, 50=10.8%, 100=11.4%<br>     lat (msec): 250=22.6%, 500=24.8%, 750=13.3%, 1000=7.1%, &gt;=2000=2.9%<br><br>Run status group 0 (all jobs):<br>   READ: io=128MiB, aggrb=<span
+ style="font-weight: bold;">645KiB/s</span>, minb=645KiB/s, maxb=645KiB/s, mint=207316msec, maxt=207316msec<br>  WRITE: io=129MiB, aggrb=<span
+ style="font-weight: bold;">761KiB/s</span>, minb=761KiB/s, maxb=761KiB/s, mint=177050msec, maxt=177050msec<br><br>Disk stats (read/write):<br>  sda: ios=30646/31983, merge=2032/1075, ticks=11528816/8175408, in_queue=19704272, util=99.99%<br><br><br><br>[<span
+ style="font-weight: bold;">iodepth = 1000</span>]<br>&gt;&gt;&gt; fio --name=global --rw=randrw --size=256m --bs=4k --direct=1 <br>        --ioengine=guasi --name=job1 --iodepth=1000 --thread<br>job1: (g=0): rw=randrw, bs=4K-4K/4K-4K, ioengine=<span
+ style="font-weight: bold;">guasi</span>, <span
+ style="font-weight: bold;">iodepth=1000</span><br>Starting 1 thread<br>Jobs: 1: [m] [100.0% done] [  3275/     0 kb/s] [eta 00m:00s]<br>job1: (groupid=0, jobs=1): err= 0: pid=25822<br>  read : io=128MiB, bw=608KiB/s, iops=148, runt=220633msec<br>    slat (msec): min=    0, max=   41, avg= 0.47, stdev= 3.91<br>    clat (msec): min=    1, max= 7306, avg=3336.43, stdev=1318.26<br>    bw (KiB/s) : min=    2, max= 3760, per=110.22%, avg=670.13, stdev=499.45<br>  write: io=132MiB, bw=647KiB/s, iops=158, runt=213594msec<br>    slat (msec): min=    0, max=   41, avg= 0.49, stdev= 3.98<br>    clat (msec): min=    0, max= 6999, avg=3294.01, stdev=1007.12<br>    bw (KiB/s) : min=    0, max= 2998, per=132.56%, avg=857.67, stdev=794.11<br>  cpu          : usr=0.24%, sys=2.45%, ctx=434627<br>  IO depths    : 1=0.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, &gt;=64=99.9%<br>     lat (msec): 2=0.1%, 4=0.0%, 10=0.1%, 20=0.2%, 50=0.2%, 100=0.1%<br>     lat (msec): 250=0.3%, 500=0.5%, 750=0.5%, 1000=0.6%, &gt;=2000=11.2%<br><br>Run status group 0 (all jobs):<br>   READ: io=128MiB, aggrb=<span
+ style="font-weight: bold;">608KiB/s</span>, minb=608KiB/s, maxb=608KiB/s, mint=220633msec, maxt=220633msec<br>  WRITE: io=132MiB, aggrb=<span
+ style="font-weight: bold;">647KiB/s</span>, minb=647KiB/s, maxb=647KiB/s, mint=213594msec, maxt=213594msec<br><br>Disk stats (read/write):<br>  sda: ios=30413/33901, merge=2338/106, ticks=12581280/186340, in_queue=12768264, util=99.66%<br><br><br><br>&gt;&gt;&gt; fio --name=global --rw=randrw --size=256m --bs=4k --direct=1 <br>        --ioengine=libaio --name=job1 --iodepth=1000 --thread<br>job1: (g=0): rw=randrw, bs=4K-4K/4K-4K, ioengine=<span
+ style="font-weight: bold;">libaio</span>, <span
+ style="font-weight: bold;">iodepth=1000</span><br>Starting 1 thread<br>Jobs: 1: [m] [97.7% done] [   577/   516 kb/s] [eta 00m:05s]<br>job1: (groupid=0, jobs=1): err= 0: pid=26828<br>  read : io=128MiB, bw=626KiB/s, iops=153, runt=213413msec<br>    slat (msec): min=    0, max= 4876, avg=3274.26, stdev=1619.11<br>    clat (msec): min=    0, max= 6058, avg=613.37, stdev=1333.82<br>    bw (KiB/s) : min=    0, max= 8126, per=214.47%, avg=1342.61, stdev=1809.33<br>  write: io=132MiB, bw=652KiB/s, iops=159, runt=212685msec<br>    slat (msec): min=    0, max= 2724, avg=1550.13, stdev=590.41<br>    clat (msec): min=    0, max= 4694, avg=469.30, stdev=1153.29<br>    bw (KiB/s) : min=    0, max= 7128, per=154.74%, avg=1008.93, stdev=1317.10<br>  cpu          : usr=0.06%, sys=0.72%, ctx=24804<br>  IO depths    : 1=0.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, &gt;=64=99.9%<br>     lat (msec): 2=75.0%, 4=0.1%, 10=0.2%, 20=0.2%, 50=0.1%, 100=0.1%<br>     lat (msec): 250=2.4%, 500=2.2%, 750=1.4%, 1000=1.4%, &gt;=2000=5.7%<br><br>Run status group 0 (all jobs):<br>   READ: io=128MiB, aggrb=<span
+ style="font-weight: bold;">626KiB/s</span>, minb=626KiB/s, maxb=626KiB/s, mint=213413msec, maxt=213413msec<br>  WRITE: io=132MiB, aggrb=<span
+ style="font-weight: bold;">652KiB/s</span>, minb=652KiB/s, maxb=652KiB/s, mint=212685msec, maxt=212685msec<br><br>Disk stats (read/write):<br>  sda: ios=30215/32234, merge=2448/1707, ticks=19955036/12018636, in_queue=33917852, util=99.94%<br><br><br><br>[<span
+ style="font-weight: bold;">iodepth = 10000</span>]<br>&gt;&gt;&gt; fio --name=global --rw=randrw --size=256m --bs=4k --direct=1 <br>        --ioengine=guasi --name=job1 --iodepth=10000 --thread<br>job1: (g=0): rw=randrw, bs=4K-4K/4K-4K, ioengine=<span
+ style="font-weight: bold;">guasi</span>, <span
+ style="font-weight: bold;">iodepth=10000</span><br>Starting 1 thread<br>Jobs: 1: [m] [100.0% done] [     0/     0 kb/s] [eta 00m:00s]<br>job1: (groupid=0, jobs=1): err= 0: pid=21767<br>  read : io=145MiB, bw=641KiB/s, iops=156, runt=236473msec<br>    slat (msec): min=    0, max=  230, avg=18.17, stdev=50.51<br>    clat (msec): min=    1, max=53244, avg=30356.92, stdev=12078.88<br>    bw (KiB/s) : min=    2, max= 2514, per=91.11%, avg=584.01, stdev=369.46<br>  write: io=150MiB, bw=677KiB/s, iops=165, runt=232681msec<br>    slat (msec): min=    0, max=  230, avg=18.53, stdev=50.94<br>    clat (msec): min=    1, max=53220, avg=32159.18, stdev=10863.48<br>    bw (KiB/s) : min=    0, max= 3088, per=98.79%, avg=668.82, stdev=669.49<br>  cpu          : usr=0.20%, sys=2.13%, ctx=321641<br>  IO depths    : 1=0.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, &gt;=64=99.9%<br>     lat (msec): 2=0.0%, 4=0.0%, 10=0.0%, 20=0.0%, 50=0.0%, 100=0.0%<br>     lat (msec): 250=0.0%, 500=0.0%, 750=0.0%, 1000=0.0%, &gt;=2000=0.3%<br><br>Run status group 0 (all jobs):<br>   READ: io=145MiB, aggrb=<span
+ style="font-weight: bold;">641KiB/s</span>, minb=641KiB/s, maxb=641KiB/s, mint=236473msec, maxt=236473msec<br>  WRITE: io=150MiB, aggrb=<span
+ style="font-weight: bold;">677KiB/s</span>, minb=677KiB/s, maxb=677KiB/s, mint=232681msec, maxt=232681msec<br><br>Disk stats (read/write):<br>  sda: ios=30132/38602, merge=7003/72, ticks=9963460/237800, in_queue=10201296, util=99.11%<br><br><br>&gt;&gt;&gt; fio --name=global --rw=randrw --size=256m --bs=4k --direct=1 <br>        --ioengine=libaio --name=job1 --iodepth=10000 --thread<br>job1: (g=0): rw=randrw, bs=4K-4K/4K-4K, ioengine=<span
+ style="font-weight: bold;">libaio</span>, <span
+ style="font-weight: bold;">iodepth=10000</span><br>Starting 1 thread<br>Jobs: 1: [m] [91.9% done] [     0/     0 kb/s] [eta 00m:21s]]<br>job1: (groupid=0, jobs=1): err= 0: pid=23794<br>  read : io=135MiB, bw=663KiB/s, iops=161, runt=213443msec<br>    slat (msec): min=  405, max=55971, avg=49388.29, stdev=7498.58<br>    clat (msec): min=    0, max=55981, avg=487.09, stdev=4603.44<br>    bw (KiB/s) : min=    0, max=78767, per=1604.69%, avg=10639.12, stdev=27546.25<br>  write: io=138MiB, bw=610KiB/s, iops=149, runt=237610msec<br>    slat (msec): min=    0, max=55972, avg=17419.86, stdev=9878.98<br>    clat (msec): min=    0, max=55981, avg=429.89, stdev=4413.43<br>    bw (KiB/s) : min=    0, max=80638, per=1582.17%, avg=9651.22, stdev=26668.44<br>  cpu          : usr=0.06%, sys=0.69%, ctx=27038<br>  IO depths    : 1=0.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, &gt;=64=99.9%<br>     lat (msec): 2=0.4%, 4=97.0%, 10=0.0%, 20=0.5%, 50=0.1%, 100=0.1%<br>     lat (msec): 250=0.2%, 500=0.4%, 750=0.1%, 1000=0.0%, &gt;=2000=0.0%<br><br>Run status group 0 (all jobs):<br>   READ: io=135MiB, aggrb=<span
+ style="font-weight: bold;">663KiB/s</span>, minb=663KiB/s, maxb=663KiB/s, mint=213443msec, maxt=213443msec<br>  WRITE: io=138MiB, aggrb=<span
+ style="font-weight: bold;">610KiB/s</span>, minb=610KiB/s, maxb=610KiB/s, mint=237610msec, maxt=237610msec<br><br>Disk stats (read/write):<br>  sda: ios=33738/28795, merge=907/6695, ticks=24825684/12270488, in_queue=37096692, util=99.57%<br><br><br><br></pre>
+<div
+ style="text-align: center; font-family: monospace; color: rgb(0, 0, 255);"><big><span
+ style="font-weight: bold;">Conclusions</span></big><br>
+<div style="text-align: left;"><br>
+Over the multiple tests that I ran using <span
+ style="font-weight: bold;">FIO</span>, <span
+ style="font-weight: bold;">GUASI</span> and <span
+ style="font-weight: bold;">Libaio</span> performance matched each
+other pretty much consistently. Performance fluctuated over different
+measures of about +/-10% around their mean value. Typically <span
+ style="font-weight: bold;">GUASI</span> resulted only slightly more
+performing than <span style="font-weight: bold;">Libaio</span>, but
+not that much to sustain a claim (differences were lower than measure
+fluctuations). These results shows that the <span
+ style="font-weight: bold;">GUASI</span> library can be used as generic
+asynchronous provider, with performance matching the <span
+ style="font-weight: bold;">KAIO</span> (Linux Kernel AIO)
+implementation. Even when pushed to iodepths that are quite big for the
+test hardware. The big advantage of <span style="font-weight: bold;">GUASI</span>,
+is that it can render asynchronous <span
+ style="font-weight: bold; text-decoration: underline;">any</span>
+system call or whatever userspace function.<br>
+<br>
+</div>
+</div>
+<pre style="color: rgb(0, 0, 255); font-family: monospace;"><br><br><big><a
+ style="font-weight: bold;" href="davide.html">Back Home</a></big><br><br><br></pre>
+<br style="color: rgb(0, 0, 255); font-family: monospace;">
+</body>
+</html>

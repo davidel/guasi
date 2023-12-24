@@ -1,0 +1,6 @@
+
+* Feb 09, 2007 - Davide Libenzi <davidel@xmailserver.org>
+
+  - Finally found the time to wrap the old GUASI code into an
+    automake/autoconf framework.
+

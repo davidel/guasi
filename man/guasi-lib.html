@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta name="Author" content="Davide Libenzi">
+  <meta name="GENERATOR" content="Mozilla 1.2">
+  <meta name="Keywords"
+ content="asyncronous,execution,thread,pthread,coroutine,epoll">
+  <title>GUASI Home Page</title>
+</head>
+<body style="color: rgb(0, 0, 255);">
+<p style="font-family: monospace;" align="center"><span
+ style="font-weight: bold;">GUASI<br>
+(Generic Userspace Asyncronous
+Syscall Interface)</span><br>
+<br>
+</p>
+<span style="font-family: monospace;">
+The
+</span><b style="font-family: monospace;">guasi</b><span
+ style="font-family: monospace;">
+library implements a thread based generic asyncronous execution engine,
+to be
+used to give otherwise syncronous calls an asyncronous behaviour. It
+can be
+used to wrap any syncronous call, so that it can be scheduled for
+execution,
+and whose result can be fetched at later time (hence not blocking the
+submitter thread). The
+</span><b style="font-family: monospace;">guasi</b><span
+ style="font-family: monospace;">
+library can be used as complement to standard event retrieval
+interfaces like
+</span><b style="font-family: monospace;"><a
+ href="http://www.xmailserver.org/cgi-bin/man/man2html?2+poll">poll</a></b><span
+ style="font-family: monospace;">(2), </span><b
+ style="font-family: monospace;"><a
+ href="http://www.xmailserver.org/cgi-bin/man/man2html?2+select">select</a></b><span
+ style="font-family: monospace;">(2)
+or
+</span><b style="font-family: monospace;"><a
+ href="http://www.xmailserver.org/cgi-bin/man/man2html?4+epoll">epoll</a></b><span
+ style="font-family: monospace;">(4).
+The
+</span><b style="font-family: monospace;">guasi</b><span
+ style="font-family: monospace;">
+library is generic, by meaning that any (not only system calls)
+otherwise
+syncronous function can be made asyncronous.
+Functions submitted with
+</span><b style="font-family: monospace;"><a
+ href="http://www.xmailserver.org/cgi-bin/man/man2html?3+guasi_submit">guasi_submit</a></b><span
+ style="font-family: monospace;">(3)
+will/might execute in parallel, so proper care must be taken to handle
+this behaviour.
+<br style="font-family: monospace;">
+<span style="font-family: monospace;"><br>
+</span><br style="font-family: monospace;">
+<p style="text-align: center; font-family: monospace;"><b>Documentation<br>
+</b></p>
+<div style="text-align: left; font-family: monospace;"><br>
+The <span style="font-weight: bold;">GUASI</span> library man page
+is available : <a href="guasi.html">HTML</a>&nbsp;&nbsp;&nbsp;<a
+ href="guasi.txt">TXT</a>&nbsp;&nbsp;&nbsp; <a href="guasi.pdf">PDF<br>
+</a><br>
+<br>
+</div>
+<p style="font-family: monospace;" align="center"><b>License and
+Software</b></p>
+<p style="font-family: monospace;" align="left">The <span
+ style="font-weight: bold;">GUASI</span> library
+is made available through the <a
+ href="http://www.gnu.org/copyleft/lesser.html">GNU LGPL</a> license
+together with the complete sources. Please read carefully the <a
+ href="http://www.gnu.org/copyleft/lesser.html">license</a> before
+using
+the software. The latest library package is available here :</p>
+<p style="font-family: monospace;" align="left"><a
+ href="guasi-0.25.tar.gz">Version
+0.25</a></p>
+<br style="font-family: monospace;">
+<div style="text-align: left; font-family: monospace;">
+<p align="center"><b>Links<br>
+</b></p>
+<br>
+<a href="http://freshmeat.net/projects/guasi/">FreshMeat Home Page</a><br>
+<span style="font-family: mon;"><span style="font-weight: bold;"></span><a
+ href="guasi-libaio-fio.html"><span style="font-family: monospace;"></span></a></span><a
+ href="guasi-libaio-fio.html">GUASI vs.<span style="font-weight: bold;"></span>
+Libaio - FIO Performance</a><br>
+<br>
+<br>
+<br>
+<a style="font-weight: bold;" href="davide.html">Back Home</a><br>
+<br>
+<br>
+</div>
+</body>
+</html>

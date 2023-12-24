@@ -1,0 +1,513 @@
+.\"
+.\"  guasi by Davide Libenzi (generic userspace async syscall implementation)
+.\"  Copyright (C) 2003  Davide Libenzi
+.\"
+.\"  This library is free software; you can redistribute it and/or
+.\"  modify it under the terms of the GNU Lesser General Public
+.\"  License as published by the Free Software Foundation; either
+.\"  version 2.1 of the License, or (at your option) any later version.
+.\"
+.\"  This library is distributed in the hope that it will be useful,
+.\"  but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\"  Lesser General Public License for more details.
+.\"
+.\"  You should have received a copy of the GNU Lesser General Public
+.\"  License along with this library; if not, write to the Free Software
+.\"  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+.\"
+.\"  Davide Libenzi <davidel@xmailserver.org>
+.\"
+.na
+.TH guasi 3 "0.25" "GNU" "Generic Userspace Async Syscall Implementation"
+.SH NAME
+
+guasi_create, guasi_free, guasi_submit, guasi_fetch, guasi_req_cancel,
+guasi_req_info, guasi_req_free
+
+guasi__open, guasi__read, guasi__write, guasi__pread, guasi__pwrite,
+guasi__sendfile, guasi__opendir, guasi__readdir, guasi__stat, guasi__fstat,
+guasi__recv, guasi__recvfrom, guasi__send, guasi__sendto, guasi__accept,
+guasi__connect, guasi__fsync
+
+
+.SH SYNOPSIS
+.SS Core API
+
+.nf
+.B #include <guasi.h>
+.sp
+.BI "guasi_t guasi_create(int " min_threads ", int " max_threads ", int " max_priority ");"
+.nl
+.BI "void guasi_free(guasi_t " hctx ");"
+.nl
+.BI "guasi_req_t guasi_submit(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                         guasi_syscall_t " proc ", guasi_cleanup_t " free ", int " nparams ", ...);"
+.nl
+.BI "int guasi_fetch(guasi_t " hctx ", guasi_req_t *" reqs ", int " minreqs ","
+.BI "                int " maxreqs ", long " timeo ");"
+.nl
+.BI "int guasi_req_cancel(guasi_req_t " hreq ");"
+.nl
+.BI "int guasi_req_info(guasi_req_t " hreq ", struct guasi_reqinfo *" rinf ");"
+.nl
+.BI "void guasi_req_free(guasi_req_t " hreq ");"
+.nl
+
+.SS POSIX wrappers:
+
+.nf
+.B #include <guasi_syscalls.h>
+.sp
+.BI "guasi_req_t guasi__open(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                        char const *" name ", long " flags ", long " mode ");"
+.nl
+.BI "guasi_req_t guasi__read(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                        int " fd ", void *" buf ", size_t " size ");"
+.nl
+.BI "guasi_req_t guasi__write(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                         int " fd ", void const *" buf ", size_t " size ");"
+.nl
+.BI "guasi_req_t guasi__pread(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                          int " fd ", void *" buf ", size_t " size ", goff_t " off ");"
+.nl
+.BI "guasi_req_t guasi__pwrite(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                          int " fd ", void const *" buf ", size_t " size ", goff_t " off ");"
+.nl
+.BI "guasi_req_t guasi__sendfile(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                            int " ofd ", int " ifd ", goff_t *" off ", size_t " cnt ");"
+.nl
+.BI "guasi_req_t guasi__opendir(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                           char const *" name ");"
+.nl
+.BI "guasi_req_t guasi__readdir(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                           DIR *" dir ");"
+.nl
+.BI "guasi_req_t guasi__stat(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                        char const *" name ", struct stat *" sbuf ");"
+.nl
+.BI "guasi_req_t guasi__fstat(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                         int " fd ", struct stat *" sbuf ");"
+.nl
+.BI "guasi_req_t guasi__recv(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                        int " fd ", void *" buf ", size_t " size ", int " flags ","
+.BI "                        long " timeo ");"
+.nl
+.BI "guasi_req_t guasi__recvfrom(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                            int " fd ", void *" buf ", size_t " size ", int " flags ","
+.BI "                            struct sockaddr *" from ", socklen_t *" fromlen ", long " timeo ");"
+.nl
+.BI "guasi_req_t guasi__send(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                        int " fd ", void const *" buf ", size_t " size ", int " flags ","
+.BI "                        long " timeo ");"
+.nl
+.BI "guasi_req_t guasi__sendto(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                          int " fd ", void const *" buf ", size_t " size ", int " flags ","
+.BI "                          struct sockaddr const *" to ", socklen_t " tolen ", long " timeo ");"
+.nl
+.BI "guasi_req_t guasi__accept(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                          int " fd ", struct sockaddr *" addr ", socklen_t *" addrlen ","
+.BI "                          long " timeo ");"
+.nl
+.BI "guasi_req_t guasi__connect(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                           int " fd ", struct sockaddr const *" addr ", socklen_t " addrlen ","
+.BI "                           long " timeo ");"
+.nl
+.BI "guasi_req_t guasi__fsync(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                         int " fd ");"
+.nl
+
+.SH DESCRIPTION
+The
+.B guasi
+library implements a thread based generic asyncronous execution engine, to be
+used to give otherwise syncronous calls an asyncronous behaviour. It can be
+used to wrap any syncronous call, so that it can be scheduled for execution,
+and whose result can be fetched at later time (hence not blocking the
+submitter thread). The
+.B guasi
+library can be used as complement to standard event retrieval interfaces like
+.BR poll "(2), " select (2)
+or
+.BR epoll (4).
+The
+.B guasi
+library is generic, by meaning that any (not only system calls) otherwise
+syncronous function can be made asyncronous.
+Functions submitted with
+.BR guasi_submit (3)
+will/might execute in parallel, so proper care must be taken to handle this behaviour.
+Care must be taken to select the proper stack size, according to what the
+asyncronous functions will require.
+The default
+.B PTHREAD_STACK_MIN
+value is more than enough when executing simple system call wrappers, but it may not
+be enough if the function submitted with
+.BR guasi_submit (3)
+uses a lot of local (stack) allocations.
+
+.SS Structures and Types
+The following structures are defined:
+.TP
+.BI guasi_param_t
+
+The
+.B guasi_param_t
+type is the basic type used to return asyncronous operation results, and to
+pass parameters to asyncronous callbacks. Its size guarantee that a pointer
+can be safely passed through it.
+
+.TP
+.BI guasi_syscall_t
+
+The
+.B guasi_syscall_t
+type is a function pointer type, that is used to pass asyncronous functions to
+.BR guasi_submit .
+An asyncronous function looks like:
+
+.nf
+	guasi_param_t async_proc(void *priv, guasi_param_t const *params) {
+		guasi_param_t result;
+		
+		...
+		return result;
+	}
+.fi
+
+.TP
+.B guasi_cleanup_t
+
+The
+.B guasi_cleanup_t
+type is a function pointer type, that is used to pass to
+.B guasi_submit
+to give the caller to perform a cleanup of the parameters passed to
+.B guasi_submit
+itself.
+A cleanup function looks like:
+
+.nf
+	void cleanup_proc(void *priv, guasi_param_t const *params) {
+		...
+	}
+.fi
+
+
+.TP
+.BI "struct guasi_reqinfo"
+
+.nf
+	struct guasi_reqinfo {
+		void *priv;
+		void *asid;
+		guasi_param_t result;
+		long error;
+		int status;
+	};
+.fi
+
+The
+.B "struct guasi_reqinfo"
+describes the status of a request submitted to a
+.B guasi
+handle. The
+.B guasi_req_info
+function can be used to retrieve such information from a request handle
+.RB "(" guasi_req_t ")."
+The
+.I priv
+member is the same
+.I priv
+parameter that is passed to the
+.B guasi_submit
+function when the request was submitted. The
+.I asid
+is the request identifier, passed to
+.BR guasi_submit .
+The
+.I result
+member is the result of the asyncronous operation, that is in turn, the value
+returned by the
+.I proc
+parameter of the
+.B guasi_submit
+function. The
+.I error
+member if the value or the C library
+.B errno
+after the
+.I proc
+asyncronous function execution. The
+.I status
+is the current status of the request. Possible values for the
+.I status
+member are:
+.br
+.RS 16
+.TP
+.B GUASI_STATUS_PENDING
+The request has still to be dequeued.
+
+.TP
+.B GUASI_STATUS_ACTIVE
+The request is executing.
+
+.TP
+.B GUASI_STATUS_COMPLETE
+The request has completed.
+
+.TP
+.B GUASI_STATUS_CANCELED
+The request has been canceled.
+
+.RE
+.IP
+The
+.I result
+and
+.I error
+members are undefined until the request
+.I status
+reaches the
+.B GUASI_STATUS_COMPLETE
+value.
+
+
+.SS Functions (Core API)
+The following functions are defined:
+.TP
+.BI "guasi_t guasi_create(int " min_threads ", int " max_threads ", int " max_priority ");"
+
+The
+.B guasi_create
+function creates a
+.B guasi
+handle to be used as a gateway for all the following
+.B guasi
+operations. The
+.I min_threads
+parameter specifies the minimum number of threads to be used in the
+.B guasi
+thread pool, and the
+.I max_threads
+parameter specifies the maximum number of threads (zero means unlimited).
+Since
+.B guasi
+requests can have different priorities, the
+.I max_priority
+parameter specifies the number of priorities that the new
+.B guasi
+handle must support.
+The function returns the new
+.B guasi
+handle if succeeded, or
+.B NULL
+if failed.
+
+.TP
+.BI "void guasi_free(guasi_t " hctx ");"
+
+The
+.B guasi_free
+function frees all the resources associated with the
+.B guasi
+handle passed in
+.IR hctx .
+
+.TP
+.BI "guasi_req_t guasi_submit(guasi_t " hctx ", void *" priv ", void *" asid ", int " prio ","
+.BI "                         guasi_syscall_t " proc ", guasi_cleanup_t " free ", int " nparams ", ...);"
+
+The
+.B guasi_submit
+function submits a new request to the
+.B guasi
+handle passed in
+.IR hctx .
+The
+.I priv
+parameter is an opaque value that is passed as is to the
+.I proc
+asyncronous function. The
+.I free
+function, if not
+.BR NULL ","
+will be called to give the caler the chance to cleanup the parameters.
+The
+.I asid
+is a cookie that identifies the request, and is returned by the
+.B guasi_req_info
+function, inside the
+.B "struct guasi_reqinfo"
+strcture. The priority of the request is passed in the
+.I prio
+parameter, that should range from 0 to
+.RI "(" max_priority
+- 1). The
+.I nparams
+parameter specifies the number of arguments that follows and that will be
+passed to the
+.I proc
+asyncronous function.
+The function returns a request handle if succeeded, or
+.B NULL
+if failed.
+
+.TP
+.BI "int guasi_fetch(guasi_t " hctx ", guasi_req_t *" reqs ", int " minreqs ","
+.BI "                int " maxreqs ", long " timeo ");"
+
+The
+.B guasi_fetch
+function retrieves completed requests from the
+.B guasi
+handle passed in
+.IR hctx .
+Not less than
+.IR minreqs ","
+and up to
+.I maxreqs
+requests are retrieved, and stored inside the
+.I reqs
+pointer. The
+.I timeo
+represent a maximum time (in milliseconds) to wait for some request to complete.
+If
+.I timeo
+is negative, the wait for completed requests will not have a time limit.
+The function returns the number of completed requests, or a negative
+number in case of error.
+
+.TP
+.BI "int guasi_req_cancel(guasi_req_t " hreq ");"
+
+The
+.B guasi_req_cancel
+function cancels a pending request specified in the
+.I hreq
+parameter. The function returns the current status of the request, or a
+negative number in case of error.
+A canceled request will be available at the next
+.BR guasi_fetch ()
+call, with
+.BR guasi_req_info ()
+returning the proper status. If the reported status is
+.BR GUASI_STATUS_CANCELED ","
+it means that the request has been canceled before having the chance to be
+executed. If the reported status is
+.BR GUASI_STATUS_COMPLETE ","
+the caller should check the
+.I error
+member of the
+.B "struct guasi_reqinfo"
+structure to see if the request has fully completed before we canceled, or
+if if has been interrupted while executing (in which case
+.I error
+should hold the
+.B EINTR
+value - at least for system call wrappers).
+
+.TP
+.BI "int guasi_req_info(guasi_req_t " hreq ", struct guasi_reqinfo *" rinf ");"
+
+The
+.B guasi_req_info
+functions retrieves information about the request passed in the
+.I hreq
+parameter. The request information will be stored inside the
+.I rinf
+.B "struct guasi_reqinfo"
+pointer.
+The function returns 0 is case of success, or a negative number in case of error.
+
+.TP
+.BI "void guasi_req_free(guasi_req_t " hreq ");"
+
+The
+.B guasi_req_free
+function frees all the resources associated with the request handle passed in
+.IR hreq .
+A request can be freed only after it has been returned by the
+.BR guasi_fetch ()
+function.
+
+.SS Functions (POSIX wrappers)
+
+All the POSIX wrappers functions implemented by
+.BR guasi ,
+map to the corresponding POSIX function in terms of parameters and result type.
+Some networking functions can have an extra
+.I timeo
+parameter, that can be used to specify a timeout (in milliseconds) for
+the operation.
+
+.SH PERFORMANCE
+
+One software that allows you to compare
+.B guasi
+performance with other kinds of asyncronous I/O providers, is
+.BR FIO ":"
+
+.B http://freshmeat.net/projects/fio/
+
+Performance results of
+.B guasi
+against
+.B libaio
+using
+.B FIO
+are reported in this page:
+
+.B http://www.xmailserver.org/guasi-libaio-fio.html
+
+.SH NOTES
+The following notes applies to the
+.B guasi
+library usage:
+.TP
+.B Linux and NPTL
+
+When using
+.B guasi
+on a Linux system using NPTL (thread library), the maximum number of threads
+is limited to about 350 on a 32 bit system with a 3G/1G split. This because
+NPTL reserves a 8MB VM area (default stack reservation) for each thread stack.
+Using
+.BR ulimit (sh)
+it is possible to reduce the stack area to a lower value, hence allowing an
+higher number of threads to be created. The command is:
+
+.nf
+	$ ulimit -s NN
+.fi
+
+Where
+.I NN
+is the number of KB to be reserved for the stack. Something around 64 should be
+enough for most applications.
+
+.SH LICENSE
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+A copy of the license is available at:
+
+.BR http://www.gnu.org/copyleft/lesser.html
+
+.SH AUTHOR
+Developed by Davide Libenzi
+.RB < davidel@xmailserver.org >
+
+.SH AVAILABILITY
+The latest version of the
+.B guasi
+library can be found at:
+
+.BR http://www.xmailserver.org/guasi-lib.html
+
+.SH BUGS
+There are no known bugs.  Bug reports and comments to Davide Libenzi
+.RB < davidel@xmailserver.org >
+

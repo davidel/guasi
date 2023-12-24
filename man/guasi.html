@@ -1,0 +1,672 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD><TITLE>Man page of guasi</TITLE>
+</HEAD><BODY text="#0000FF" bgcolor="#FFFFFF" style="font-family: monospace;">
+<H1>guasi</H1>
+Section: Generic Userspace Async Syscall Implementation (3)<BR>Updated: 0.25<BR><A HREF="#index">Index</A>
+<A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+<P>
+guasi_create, guasi_free, guasi_submit, guasi_fetch, guasi_req_cancel,
+guasi_req_info, guasi_req_free
+<P>
+guasi__open, guasi__read, guasi__write, guasi__pread, guasi__pwrite,
+guasi__sendfile, guasi__opendir, guasi__readdir, guasi__stat, guasi__fstat,
+guasi__recv, guasi__recvfrom, guasi__send, guasi__sendto, guasi__accept,
+guasi__connect, guasi__fsync
+<P>
+<P>
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<A NAME="lbAD">&nbsp;</A>
+<H3>Core API</H3>
+
+<P>
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/guasi.h">guasi.h</A>&gt;</B>
+
+<B>guasi_t guasi_create(int </B><I>min_threads</I><B>, int </B><I>max_threads</I><B>, int </B><I>max_priority</I><B>);</B>
+<B>void guasi_free(guasi_t </B><I>hctx</I><B>);</B>
+<B>guasi_req_t guasi_submit(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                         guasi_syscall_t </B><I>proc</I><B>, guasi_cleanup_t </B><I>free</I><B>, int </B><I>nparams</I><B>, ...);</B>
+<B>int guasi_fetch(guasi_t </B><I>hctx</I><B>, guasi_req_t *</B><I>reqs</I><B>, int </B><I>minreqs</I><B>,</B>
+<B>                int </B><I>maxreqs</I><B>, long </B><I>timeo</I><B>);</B>
+<B>int guasi_req_cancel(guasi_req_t </B><I>hreq</I><B>);</B>
+<B>int guasi_req_info(guasi_req_t </B><I>hreq</I><B>, struct guasi_reqinfo *</B><I>rinf</I><B>);</B>
+<B>void guasi_req_free(guasi_req_t </B><I>hreq</I><B>);</B>
+
+</PRE><A NAME="lbAE">&nbsp;</A>
+<H3>POSIX wrappers:</H3>
+
+<P>
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/guasi_syscalls.h">guasi_syscalls.h</A>&gt;</B>
+
+<B>guasi_req_t guasi__open(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                        char const *</B><I>name</I><B>, long </B><I>flags</I><B>, long </B><I>mode</I><B>);</B>
+<B>guasi_req_t guasi__read(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                        int </B><I>fd</I><B>, void *</B><I>buf</I><B>, size_t </B><I>size</I><B>);</B>
+<B>guasi_req_t guasi__write(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                         int </B><I>fd</I><B>, void const *</B><I>buf</I><B>, size_t </B><I>size</I><B>);</B>
+<B>guasi_req_t guasi__pread(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                          int </B><I>fd</I><B>, void *</B><I>buf</I><B>, size_t </B><I>size</I><B>, goff_t </B><I>off</I><B>);</B>
+<B>guasi_req_t guasi__pwrite(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                          int </B><I>fd</I><B>, void const *</B><I>buf</I><B>, size_t </B><I>size</I><B>, goff_t </B><I>off</I><B>);</B>
+<B>guasi_req_t guasi__sendfile(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                            int </B><I>ofd</I><B>, int </B><I>ifd</I><B>, goff_t *</B><I>off</I><B>, size_t </B><I>cnt</I><B>);</B>
+<B>guasi_req_t guasi__opendir(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                           char const *</B><I>name</I><B>);</B>
+<B>guasi_req_t guasi__readdir(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                           DIR *</B><I>dir</I><B>);</B>
+<B>guasi_req_t guasi__stat(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                        char const *</B><I>name</I><B>, struct stat *</B><I>sbuf</I><B>);</B>
+<B>guasi_req_t guasi__fstat(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                         int </B><I>fd</I><B>, struct stat *</B><I>sbuf</I><B>);</B>
+<B>guasi_req_t guasi__recv(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                        int </B><I>fd</I><B>, void *</B><I>buf</I><B>, size_t </B><I>size</I><B>, int </B><I>flags</I><B>,</B>
+<B>                        long </B><I>timeo</I><B>);</B>
+<B>guasi_req_t guasi__recvfrom(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                            int </B><I>fd</I><B>, void *</B><I>buf</I><B>, size_t </B><I>size</I><B>, int </B><I>flags</I><B>,</B>
+<B>                            struct sockaddr *</B><I>from</I><B>, socklen_t *</B><I>fromlen</I><B>, long </B><I>timeo</I><B>);</B>
+<B>guasi_req_t guasi__send(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                        int </B><I>fd</I><B>, void const *</B><I>buf</I><B>, size_t </B><I>size</I><B>, int </B><I>flags</I><B>,</B>
+<B>                        long </B><I>timeo</I><B>);</B>
+<B>guasi_req_t guasi__sendto(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                          int </B><I>fd</I><B>, void const *</B><I>buf</I><B>, size_t </B><I>size</I><B>, int </B><I>flags</I><B>,</B>
+<B>                          struct sockaddr const *</B><I>to</I><B>, socklen_t </B><I>tolen</I><B>, long </B><I>timeo</I><B>);</B>
+<B>guasi_req_t guasi__accept(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                          int </B><I>fd</I><B>, struct sockaddr *</B><I>addr</I><B>, socklen_t *</B><I>addrlen</I><B>,</B>
+<B>                          long </B><I>timeo</I><B>);</B>
+<B>guasi_req_t guasi__connect(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                           int </B><I>fd</I><B>, struct sockaddr const *</B><I>addr</I><B>, socklen_t </B><I>addrlen</I><B>,</B>
+<B>                           long </B><I>timeo</I><B>);</B>
+<B>guasi_req_t guasi__fsync(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+<B>                         int </B><I>fd</I><B>);</B>
+
+</PRE><A NAME="lbAF">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The
+<B>guasi</B>
+
+library implements a thread based generic asyncronous execution engine, to be
+used to give otherwise syncronous calls an asyncronous behaviour. It can be
+used to wrap any syncronous call, so that it can be scheduled for execution,
+and whose result can be fetched at later time (hence not blocking the
+submitter thread). The
+<B>guasi</B>
+
+library can be used as complement to standard event retrieval interfaces like
+<B><A HREF="/cgi-bin/man/man2html?2+poll">poll</A></B>(2), <B><A HREF="/cgi-bin/man/man2html?2+select">select</A></B>(2)
+
+or
+<B><A HREF="/cgi-bin/man/man2html?4+epoll">epoll</A></B>(4).
+
+The
+<B>guasi</B>
+
+library is generic, by meaning that any (not only system calls) otherwise
+syncronous function can be made asyncronous.
+Functions submitted with
+<B><A HREF="/cgi-bin/man/man2html?3+guasi_submit">guasi_submit</A></B>(3)
+
+will/might execute in parallel, so proper care must be taken to handle this behaviour.
+Care must be taken to select the proper stack size, according to what the
+asyncronous functions will require.
+The default
+<B>PTHREAD_STACK_MIN</B>
+
+value is more than enough when executing simple system call wrappers, but it may not
+be enough if the function submitted with
+<B><A HREF="/cgi-bin/man/man2html?3+guasi_submit">guasi_submit</A></B>(3)
+
+uses a lot of local (stack) allocations.
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H3>Structures and Types</H3>
+
+The following structures are defined:
+<DL COMPACT>
+<DT><B>guasi_param_t</B>
+
+<DD>
+<P>
+The
+<B>guasi_param_t</B>
+
+type is the basic type used to return asyncronous operation results, and to
+pass parameters to asyncronous callbacks. Its size guarantee that a pointer
+can be safely passed through it.
+<P>
+<DT><B>guasi_syscall_t</B>
+
+<DD>
+<P>
+The
+<B>guasi_syscall_t</B>
+
+type is a function pointer type, that is used to pass asyncronous functions to
+<B>guasi_submit</B>.
+
+An asyncronous function looks like:
+<P>
+<PRE>
+        guasi_param_t async_proc(void *priv, guasi_param_t const *params) {
+                guasi_param_t result;
+                
+                ...
+                return result;
+        }
+</PRE>
+
+<P>
+<DT><B>guasi_cleanup_t</B>
+
+<DD>
+<P>
+The
+<B>guasi_cleanup_t</B>
+
+type is a function pointer type, that is used to pass to
+<B>guasi_submit</B>
+
+to give the caller to perform a cleanup of the parameters passed to
+<B>guasi_submit</B>
+
+itself.
+A cleanup function looks like:
+<P>
+<PRE>
+        void cleanup_proc(void *priv, guasi_param_t const *params) {
+                ...
+        }
+</PRE>
+
+<P>
+<P>
+<DT><B>struct guasi_reqinfo</B>
+
+<DD>
+<P>
+<PRE>
+        struct guasi_reqinfo {
+                void *priv;
+                void *asid;
+                guasi_param_t result;
+                long error;
+                int status;
+        };
+</PRE>
+
+<P>
+The
+<B>struct guasi_reqinfo</B>
+
+describes the status of a request submitted to a
+<B>guasi</B>
+
+handle. The
+<B>guasi_req_info</B>
+
+function can be used to retrieve such information from a request handle
+(<B>guasi_req_t</B>).
+
+The
+<I>priv</I>
+
+member is the same
+<I>priv</I>
+
+parameter that is passed to the
+<B>guasi_submit</B>
+
+function when the request was submitted. The
+<I>asid</I>
+
+is the request identifier, passed to
+<B>guasi_submit</B>.
+
+The
+<I>result</I>
+
+member is the result of the asyncronous operation, that is in turn, the value
+returned by the
+<I>proc</I>
+
+parameter of the
+<B>guasi_submit</B>
+
+function. The
+<I>error</I>
+
+member if the value or the C library
+<B>errno</B>
+
+after the
+<I>proc</I>
+
+asyncronous function execution. The
+<I>status</I>
+
+is the current status of the request. Possible values for the
+<I>status</I>
+
+member are:
+<BR>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>GUASI_STATUS_PENDING</B>
+
+<DD>
+The request has still to be dequeued.
+<P>
+<DT><B>GUASI_STATUS_ACTIVE</B>
+
+<DD>
+The request is executing.
+<P>
+<DT><B>GUASI_STATUS_COMPLETE</B>
+
+<DD>
+The request has completed.
+<P>
+<DT><B>GUASI_STATUS_CANCELED</B>
+
+<DD>
+The request has been canceled.
+<P>
+</DL>
+</DL>
+
+<DT><DD>
+The
+<I>result</I>
+
+and
+<I>error</I>
+
+members are undefined until the request
+<I>status</I>
+
+reaches the
+<B>GUASI_STATUS_COMPLETE</B>
+
+value.
+<P>
+<P>
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H3>Functions (Core API)</H3>
+
+The following functions are defined:
+<DL COMPACT>
+<DT><B>guasi_t guasi_create(int </B><I>min_threads</I><B>, int </B><I>max_threads</I><B>, int </B><I>max_priority</I><B>);</B>
+
+<DD>
+<P>
+The
+<B>guasi_create</B>
+
+function creates a
+<B>guasi</B>
+
+handle to be used as a gateway for all the following
+<B>guasi</B>
+
+operations. The
+<I>min_threads</I>
+
+parameter specifies the minimum number of threads to be used in the
+<B>guasi</B>
+
+thread pool, and the
+<I>max_threads</I>
+
+parameter specifies the maximum number of threads (zero means unlimited).
+Since
+<B>guasi</B>
+
+requests can have different priorities, the
+<I>max_priority</I>
+
+parameter specifies the number of priorities that the new
+<B>guasi</B>
+
+handle must support.
+The function returns the new
+<B>guasi</B>
+
+handle if succeeded, or
+<B>NULL</B>
+
+if failed.
+<P>
+<DT><B>void guasi_free(guasi_t </B><I>hctx</I><B>);</B>
+
+<DD>
+<P>
+The
+<B>guasi_free</B>
+
+function frees all the resources associated with the
+<B>guasi</B>
+
+handle passed in
+<I>hctx</I>.
+
+<P>
+<DT><B>guasi_req_t guasi_submit(guasi_t </B><I>hctx</I><B>, void *</B><I>priv</I><B>, void *</B><I>asid</I><B>, int </B><I>prio</I><B>,</B>
+
+<DD>
+<B>                         guasi_syscall_t </B><I>proc</I><B>, guasi_cleanup_t </B><I>free</I><B>, int </B><I>nparams</I><B>, ...);</B>
+
+<P>
+The
+<B>guasi_submit</B>
+
+function submits a new request to the
+<B>guasi</B>
+
+handle passed in
+<I>hctx</I>.
+
+The
+<I>priv</I>
+
+parameter is an opaque value that is passed as is to the
+<I>proc</I>
+
+asyncronous function. The
+<I>free</I>
+
+function, if not
+<B>NULL</B>,
+
+will be called to give the caler the chance to cleanup the parameters.
+The
+<I>asid</I>
+
+is a cookie that identifies the request, and is returned by the
+<B>guasi_req_info</B>
+
+function, inside the
+<B>struct guasi_reqinfo</B>
+
+strcture. The priority of the request is passed in the
+<I>prio</I>
+
+parameter, that should range from 0 to
+(<I>max_priority</I>
+
+- 1). The
+<I>nparams</I>
+
+parameter specifies the number of arguments that follows and that will be
+passed to the
+<I>proc</I>
+
+asyncronous function.
+The function returns a request handle if succeeded, or
+<B>NULL</B>
+
+if failed.
+<P>
+<DT><B>int guasi_fetch(guasi_t </B><I>hctx</I><B>, guasi_req_t *</B><I>reqs</I><B>, int </B><I>minreqs</I><B>,</B>
+
+<DD>
+<B>                int </B><I>maxreqs</I><B>, long </B><I>timeo</I><B>);</B>
+
+<P>
+The
+<B>guasi_fetch</B>
+
+function retrieves completed requests from the
+<B>guasi</B>
+
+handle passed in
+<I>hctx</I>.
+
+Not less than
+<I>minreqs</I>,
+
+and up to
+<I>maxreqs</I>
+
+requests are retrieved, and stored inside the
+<I>reqs</I>
+
+pointer. The
+<I>timeo</I>
+
+represent a maximum time (in milliseconds) to wait for some request to complete.
+If
+<I>timeo</I>
+
+is negative, the wait for completed requests will not have a time limit.
+The function returns the number of completed requests, or a negative
+number in case of error.
+<P>
+<DT><B>int guasi_req_cancel(guasi_req_t </B><I>hreq</I><B>);</B>
+
+<DD>
+<P>
+The
+<B>guasi_req_cancel</B>
+
+function cancels a pending request specified in the
+<I>hreq</I>
+
+parameter. The function returns the current status of the request, or a
+negative number in case of error.
+A canceled request will be available at the next
+<B>guasi_fetch</B>()
+
+call, with
+<B>guasi_req_info</B>()
+
+returning the proper status. If the reported status is
+<B>GUASI_STATUS_CANCELED</B>,
+
+it means that the request has been canceled before having the chance to be
+executed. If the reported status is
+<B>GUASI_STATUS_COMPLETE</B>,
+
+the caller should check the
+<I>error</I>
+
+member of the
+<B>struct guasi_reqinfo</B>
+
+structure to see if the request has fully completed before we canceled, or
+if if has been interrupted while executing (in which case
+<I>error</I>
+
+should hold the
+<B>EINTR</B>
+
+value - at least for system call wrappers).
+<P>
+<DT><B>int guasi_req_info(guasi_req_t </B><I>hreq</I><B>, struct guasi_reqinfo *</B><I>rinf</I><B>);</B>
+
+<DD>
+<P>
+The
+<B>guasi_req_info</B>
+
+functions retrieves information about the request passed in the
+<I>hreq</I>
+
+parameter. The request information will be stored inside the
+<I>rinf</I>
+
+<B>struct guasi_reqinfo</B>
+
+pointer.
+The function returns 0 is case of success, or a negative number in case of error.
+<P>
+<DT><B>void guasi_req_free(guasi_req_t </B><I>hreq</I><B>);</B>
+
+<DD>
+<P>
+The
+<B>guasi_req_free</B>
+
+function frees all the resources associated with the request handle passed in
+<I>hreq</I>.
+
+A request can be freed only after it has been returned by the
+<B>guasi_fetch</B>()
+
+function.
+<P>
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H3>Functions (POSIX wrappers)</H3>
+
+<P>
+All the POSIX wrappers functions implemented by
+<B>guasi</B>,
+
+map to the corresponding POSIX function in terms of parameters and result type.
+Some networking functions can have an extra
+<I>timeo</I>
+
+parameter, that can be used to specify a timeout (in milliseconds) for
+the operation.
+<P>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>PERFORMANCE</H2>
+
+<P>
+One software that allows you to compare
+<B>guasi</B>
+
+performance with other kinds of asyncronous I/O providers, is
+<B>FIO</B>:
+
+<P>
+<B><A HREF="http://freshmeat.net/projects/fio/">http://freshmeat.net/projects/fio/</A></B>
+
+<P>
+Performance results of
+<B>guasi</B>
+
+against
+<B>libaio</B>
+
+using
+<B>FIO</B>
+
+are reported in this page:
+<P>
+<B><A HREF="http://www.xmailserver.org/guasi-libaio-fio.html">http://www.xmailserver.org/guasi-libaio-fio.html</A></B>
+
+<P>
+<A NAME="lbAK">&nbsp;</A>
+<H2>NOTES</H2>
+
+The following notes applies to the
+<B>guasi</B>
+
+library usage:
+<DL COMPACT>
+<DT><B>Linux and NPTL</B>
+
+<DD>
+<P>
+When using
+<B>guasi</B>
+
+on a Linux system using NPTL (thread library), the maximum number of threads
+is limited to about 350 on a 32 bit system with a 3G/1G split. This because
+NPTL reserves a 8MB VM area (default stack reservation) for each thread stack.
+Using
+<B>ulimit</B>(sh)
+
+it is possible to reduce the stack area to a lower value, hence allowing an
+higher number of threads to be created. The command is:
+<P>
+<PRE>
+        $ ulimit -s NN
+</PRE>
+
+<P>
+Where
+<I>NN</I>
+
+is the number of KB to be reserved for the stack. Something around 64 should be
+enough for most applications.
+<P>
+</DL>
+<A NAME="lbAL">&nbsp;</A>
+<H2>LICENSE</H2>
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+A copy of the license is available at:
+<P>
+<B><A HREF="http://www.gnu.org/copyleft/lesser.html">http://www.gnu.org/copyleft/lesser.html</A></B>
+
+<P>
+<A NAME="lbAM">&nbsp;</A>
+<H2>AUTHOR</H2>
+
+Developed by Davide Libenzi
+&lt;<B><A HREF="mailto:davidel@xmailserver.org">davidel@xmailserver.org</A></B>&gt;
+
+<P>
+<A NAME="lbAN">&nbsp;</A>
+<H2>AVAILABILITY</H2>
+
+The latest version of the
+<B>guasi</B>
+
+library can be found at:
+<P>
+<B><A HREF="http://www.xmailserver.org/guasi-lib.html">http://www.xmailserver.org/guasi-lib.html</A></B>
+
+<P>
+<A NAME="lbAO">&nbsp;</A>
+<H2>BUGS</H2>
+
+There are no known bugs.  Bug reports and comments to Davide Libenzi
+&lt;<B><A HREF="mailto:davidel@xmailserver.org">davidel@xmailserver.org</A></B>&gt;
+
+<P>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DL>
+<DT><A HREF="#lbAD">Core API</A><DD>
+<DT><A HREF="#lbAE">POSIX wrappers:</A><DD>
+</DL>
+<DT><A HREF="#lbAF">DESCRIPTION</A><DD>
+<DL>
+<DT><A HREF="#lbAG">Structures and Types</A><DD>
+<DT><A HREF="#lbAH">Functions (Core API)</A><DD>
+<DT><A HREF="#lbAI">Functions (POSIX wrappers)</A><DD>
+</DL>
+<DT><A HREF="#lbAJ">PERFORMANCE</A><DD>
+<DT><A HREF="#lbAK">NOTES</A><DD>
+<DT><A HREF="#lbAL">LICENSE</A><DD>
+<DT><A HREF="#lbAM">AUTHOR</A><DD>
+<DT><A HREF="#lbAN">AVAILABILITY</A><DD>
+<DT><A HREF="#lbAO">BUGS</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 20:17:11 GMT, April 10, 2007
+</BODY>
+</HTML>
